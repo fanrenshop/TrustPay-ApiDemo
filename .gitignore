@@ -1,1 +1,3 @@
-/ApiDemo/bin/*
+/ApiDemo-Android/bin/*
+/ApiDemo-Android/.settings/org.eclipse.jdt.core.prefs
+
