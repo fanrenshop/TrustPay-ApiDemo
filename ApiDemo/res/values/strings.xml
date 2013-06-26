@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ApiDemo</string>
+    <string name="text_a">TrustPay Payment Demo. To make an in-app payment, press the button</string>
+    <string name="text_b">text b</string>
+    <string name="dialog_text">dialogue text</string>
+    <string name="dialog_title">dialogue title</string>
+    <string name="pay_button_name">pay</string>
+    <string name="price_points_button_name">get price points</string>
+    <string name="test_mode">Test Mode</string>
+    <string name="amount_to_bill">Amount to bill</string>
+    <string name="default_amount">5</string>
+    <string name="payment_methods_button_name">Get Billing Methods</string><string name="done">Done</string><string name="default_currency">ZAR</string><string name="currency">Currency to bill</string>
+    
+    
+    
+        
+</resources>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+
+<TextView
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:text="@string/text_a"
+    />
+<TextView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:text=""
+    />
+
+<TextView
+    android:id="@+id/textView1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/amount_to_bill"
+    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+<EditText
+    android:id="@+id/amount"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:inputType="numberDecimal"
+    android:text="@string/default_amount" >
+
+    <requestFocus />
+</EditText>
+
+<TextView
+    android:id="@+id/TextView01"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/currency"
+    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+<EditText
+    android:id="@+id/currency"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:ems="10"
+    android:inputType="textCapCharacters"
+    android:text="@string/default_currency" />
+
+<CheckBox
+    android:id="@+id/test_mode"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/test_mode" />
+
+
+<LinearLayout
+    android:id="@+id/linearLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center" >
+
+    <Button
+        android:id="@+id/pay_button"
+        android:layout_width="73dp"
+        android:layout_height="wrap_content"
+        android:text="@string/pay_button_name" />
+
+    <Button
+        android:id="@+id/price_points_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/price_points_button_name" />
+
+    <Button
+        android:id="@+id/update_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Update" />
+
+</LinearLayout>
+
+    <EditText
+        android:id="@+id/editText1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.48"
+        android:inputType="textMultiLine" >
+    </EditText>
+</LinearLayout>
+    
