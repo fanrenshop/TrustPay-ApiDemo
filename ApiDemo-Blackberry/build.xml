@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="TrustPayApiDemo" default="build">
+    
+        <!-- BLACKBERRY ANT TOOLS -->
+        <property name="bb-ant-tools.home" location="../bb-ant-tools" />
+        <taskdef resource="bb-ant-defs.xml" classpath="${bb-ant-tools.home}/bb-ant-tools.jar" />
+    
+        <!-- CONFIG FILES -->
+	<property name="common.basedir" location="../" />
+	<property name="basedir" location="/" />
+        <property file="${common.basedir}/common.properties" />
+        <property prefix="project" file="project.properties" />
+    
+        <!-- FOLDERS -->
+        <property name="dest.dir" location="./build" />
+        <property name="lib.dir" location="./lib" />
+        <!-- this is empty in the library scripts -->
+        <path id="import.jars">
+              
+          </path>
+	
+        <path id="src.files">
+                <fileset dir="src" includes="**/*" />
+                <fileset dir="res" includes="**/*" />
+                <fileset dir="lib" includes="**/*" />
+            </path>
+    
+        <!-- TARGET ACTIONS -->
+    
+        <target name="build" depends="">
+                <mkdir dir="${dest.dir}" />
+                <mkdir dir="${lib.dir}" />
+            <copy file="${basedir}/res/icon.png" tofile="${dest.dir}/icon.png" />
+
+            <copy toDir="${lib.dir}">
+                <fileset dir="../TrustPayApi/build/">
+                    <include name="TrustPayApi.jar" />
+                </fileset>
+            </copy>
+                    <rapc 
+                            jdehome="${jde.home}"
+                            output="${project.output}" 
+                            destdir="${dest.dir}" >
+            
+                        <import refid="import.jars" />
+                        <src refid="src.files" />
+                        <jdp file="${basedir}/project.properties" >
+                        </jdp>
+                        
+                    </rapc>
+            </target>
+    
+        <target name="sign" depends="build">
+                <sigtool
+                        codfile="${dest.dir}/${project.output}.cod" 
+                        jdehome="${sigtool.jde}" 
+                        password="${sigtool.password}" />
+            </target>
+    
+        <target name="clean">
+                <delete dir="${dest.dir}" />
+                <delete dir="${lib.dir}" />
+                <delete file="${basedir}/LogFile.txt" />
+            </target>
+    
+</project>

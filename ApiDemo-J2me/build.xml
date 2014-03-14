@@ -1,0 +1,134 @@
+<project name="TrustPayBasicDemo" default="all-non-obf">
+    <!-- set global properties for this build --> 
+    <property name="program_name" value="TrustPayBasicDemo"/> 
+    <property name="package_name" value="TrustPayBasicDemo"/>
+    <property name="proguard" value="../proguard/proguard.jar"/> 
+    <property name="midp_home" value="../toolkit"/> 
+    <property name="platform.home" value="../toolkit"/> 
+    <property name="platform.bootclasspath" value="${platform.home}/lib/jsr75_1.0.jar:${platform.home}/lib/jsr205_2.0.jar:${platform.home}/lib/midp_2.0.jar:${platform.home}/lib/cldc_1.1.jar"/>
+    <property name="src" value="src"/>
+    <property name="res" value="res"/>
+    <property name="build" value="build"/>
+    <property name="dist" value="dist"/> 
+    <property name="obf" value="obf"/>
+    <property name="lib" value="lib"/>
+    <property name="deploy" value="deploy"/>
+    
+    <!-- Remove Build Directories -->
+    <target name="clean">
+        <!-- Delete our the ${build} and ${dist} directory trees -->
+        <delete dir="${build}"/> 
+        <delete dir="${deploy}"/> 
+        <delete dir="${obf}"/>
+        <delete dir="${lib}"/>
+    </target>
+    
+    <!-- Create Build Directories -->
+    <target name="init" depends="clean"> 
+        <!-- Create the build directory structure used by compile and dist -->
+        <tstamp/>
+        <mkdir dir="${build}"/> 
+        <mkdir dir="${deploy}"/> 
+        <mkdir dir="${obf}"/>
+        <mkdir dir="${lib}"/>
+    </target>
+    <!-- Compile Source -->
+    <target name="compile">
+        <copy toDir="${lib}">
+            <fileset dir="../TrustPayBasic/deploy/">
+                <include name="TrustPayBasic.jar" />
+            </fileset>
+        </copy>
+        <mkdir dir="${build}/classes"/>
+        <javac destdir="${build}/classes" source = "1.3" target = "1.3" srcdir="src"
+        bootclasspath="${platform.bootclasspath}" includeantruntime = "false" classpath="${lib}/TrustPayBasic.jar"
+        />
+    </target>
+    <!-- Preverify classes --> 
+    <target name="preverify">
+        <mkdir dir="${build}/preverified"/>
+        <exec executable="${midp_home}/bin/preverify">
+            <arg line="-classpath ${platform.bootclasspath}:${lib}/TrustPayBasic.jar"/>
+            <arg line="-d ${build}/preverified"/>
+            <arg line="${build}/classes"/>
+        </exec>
+    </target>
+    <!-- Package Preverifed classes, resources and MANIFEST file -->
+    <target name="dist">
+        <mkdir dir="${build}/bin"/>
+        <echo file="${build}/bin/MANIFEST.MF">MIDlet-Vendor: Trust Pay (Pty) Ltd.${line.separator}</echo>
+        <echo file="${build}/bin/MANIFEST.MF" append = "true">MIDlet-Jar-URL: ${package_name}.jar${line.separator}</echo>
+        <echo file="${build}/bin/MANIFEST.MF" append = "true">MIDlet-Name: ${program_name}${line.separator}</echo>
+        <echo file="${build}/bin/MANIFEST.MF" append = "true">MIDlet-Version: 1.1.0${line.separator}</echo>
+        <echo file="${build}/bin/MANIFEST.MF" append = "true">MicroEdition-Configuration: CLDC-1.1${line.separator}</echo>
+        <echo file="${build}/bin/MANIFEST.MF" append = "true">MicroEdition-Profile: MIDP-2.0${line.separator}</echo>
+        <echo file="${build}/bin/MANIFEST.MF" append = "true">MIDlet-1: ApiDemo,,biz.trustpay.ApiDemo.ApiDemo${line.separator}</echo>            
+          <jar basedir="${build}/preverified"
+            jarfile="${build}/bin/${program_name}.jar"
+            manifest="${build}/bin/MANIFEST.MF">
+            <fileset dir="${res}">
+                <include name="*.*"/>
+            </fileset>
+            <zipgroupfileset dir="${lib}" includes="**/*.jar" />
+        </jar>
+        <copy file="${build}/bin/MANIFEST.MF" tofile="${build}/bin/${program_name}.jad"/>
+       <!-- <length file="${build}/bin/${program_name}.jar" property="jarSize"/>
+         
+         <echo file="${build}/bin/${program_name}.jad" append ="true" message ="MIDlet-Jar-Size: ${jarSize}"> </echo>  -->    
+    </target>
+    <!-- Obfuscate unobfuscated jar file and unjar obfuscated jar to obf area -->
+    <target name="obfuscate">
+        <java fork="yes" classname="proguard.ProGuard" classpath="${proguard}">
+            <arg line="-libraryjars ${platform.bootclasspath}:${lib}/TrustPayBasic.jar"/>
+            <arg line="-injars ${build}/bin/${program_name}.jar"/>
+            <arg line="-outjars ${obf}/${program_name}.jar"/>
+            <arg line="-keep 'public class * extends javax.microedition.midlet.MIDlet'"/>
+        </java> 
+        <unjar src="${obf}/${program_name}.jar" dest="${obf}/extract" /> 
+    </target>
+    <!-- Preverify the obfuscated classes in the obf area -->
+    <target name="preverifyobf">
+        <mkdir dir="${build}/preverifiedobf"/>
+        <exec executable="${midp_home}/bin/preverify">
+            <arg line="-classpath ${platform.bootclasspath}:${lib}/TrustPayBasic.jar"/>
+            <arg line="-d ${build}/preverifiedobf"/>
+            <arg line="${obf}/extract"/>
+        </exec>
+    </target>
+    <!-- Re-Package (Jar) the obfuscated classes, resources with MANIFEST file -->
+    <target name="distobf">
+        <copy file="${build}/bin/${program_name}.jar" todir="${build}/bin/${program_name}-orig.jar"/>
+        <mkdir dir="${build}/bin"/>
+        <jar basedir="${build}/preverifiedobf"
+            jarfile="${build}/bin/${program_name}.jar"
+            manifest="${build}/bin/MANIFEST.MF">
+            <fileset dir="${res}">
+                <include name="*.*"/>
+            </fileset>
+            <fileset dir="${obf}/extract">
+                <include name="*.png"/>
+            </fileset>
+            <fileset dir="${obf}/extract">
+                <include name="*.xml"/>
+            </fileset>
+        </jar>
+        <length file="${build}/bin/${program_name}.jar" property="jarSize"/>            
+        <copy file="${build}/bin/MANIFEST.MF" tofile="${build}/bin/${program_name}.jad"/>
+        <echo file="${build}/bin/${program_name}.jad" append="true">MIDlet-Jar-Size: ${jarSize}</echo>
+    </target>
+    <!-- Deploy Final files from /build/bin ( can be either obfuscated or not obfuscated) --> 
+    <target name="deploy">
+        <copy file="${build}/bin/${program_name}.jad" tofile="${deploy}/${program_name}.jad"/> 
+        <copy file="${build}/bin/${program_name}.jar" tofile="${deploy}/${program_name}.jar"/>
+    </target>
+    <!-- Run final jar, currently set to /build/bin may want to change to /deploy --> 
+    <target name="run">
+        <exec executable="${midp_home}/bin/emulator">
+            <arg line="-Xdescriptor:${build}/bin/${program_name}.jad"/>
+        </exec>
+    </target>
+    <!-- Combine Tasks --> 
+    <target name="all-non-obf" depends="init,compile,preverify,dist,deploy"/> 
+    <target name="all-obf" depends="init,compile,preverify,dist,obfuscate,preverifyobf,distobf,deploy"/>
+     
+</project>
